@@ -5,9 +5,10 @@ import (
 	"fmt"
 )
 
-var errNameRequired = errors.New("Name is required")
-var errStartDateRequired = errors.New("Start date is required")
-var errEndDateRequired = errors.New("End date is required")
+var errNameRequired = errors.New("name is required")
+var errStartDateRequired = errors.New("start date is required")
+var errEndDateRequired = errors.New("end date is required")
+var errDateValidation = errors.New("start date must be before end date")
 
 type ErrNotFound struct {
 	courseID string

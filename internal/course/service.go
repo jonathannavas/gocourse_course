@@ -49,6 +49,11 @@ func (s service) Create(ctx context.Context, name, startDate, endDate string) (*
 		return nil, err
 	}
 
+	if startDateParsed.After(endDateParsed) {
+		s.log.Println(errDateValidation)
+		return nil, errDateValidation
+	}
+
 	course := &domain.Course{
 		Name:      name,
 		StartDate: startDateParsed,
@@ -89,12 +94,24 @@ func (s service) Update(ctx context.Context, id string, name *string, startDate,
 
 	var startDateParsed, endDateParsed *time.Time
 
+	course, err := s.repo.Get(ctx, id)
+	if err != nil {
+		s.log.Println(err)
+		return err
+	}
+
 	if startDate != nil {
 		date, err := time.Parse("2006-01-02", *startDate)
 		if err != nil {
 			s.log.Println(err)
 			return err
 		}
+
+		if date.After(course.EndDate) {
+			s.log.Println(errDateValidation)
+			return errDateValidation
+		}
+
 		startDateParsed = &date
 		*startDateParsed = startDateParsed.Add(time.Hour * 24)
 
@@ -105,6 +122,10 @@ func (s service) Update(ctx context.Context, id string, name *string, startDate,
 		if err != nil {
 			s.log.Println(err)
 			return err
+		}
+		if course.StartDate.After(date) {
+			s.log.Println(errDateValidation)
+			return errDateValidation
 		}
 		endDateParsed = &date
 		*endDateParsed = endDateParsed.Add(time.Hour * 24)
