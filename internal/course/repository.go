@@ -33,7 +33,7 @@ func NewRepo(log *log.Logger, db *gorm.DB) Repository {
 }
 func (repo *repo) Create(ctx context.Context, course *domain.Course) error {
 
-	if err := repo.db.Debug().WithContext(ctx).Create(course).Error; err != nil {
+	if err := repo.db.WithContext(ctx).Create(course).Error; err != nil {
 		repo.log.Println(err)
 		return err
 	}
